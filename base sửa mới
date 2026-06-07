@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title th:text="${title} ?: 'CNTTShop - Công nghệ chính hãng'">CNTTShop</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+body{background:#f5f5f5}
+.main-header{background:#d71920;color:white}
+.category-btn{background:#991b1f;color:white;border:none;border-radius:30px;padding:13px 22px;font-size:20px;font-weight:600;white-space:nowrap}
+.show-category{width:330px;border-radius:12px;padding:10px 0}
+.show-category .dropdown-item{padding:13px 18px;font-size:18px;font-weight:500;border-radius:8px;margin:2px 8px}
+.show-category .dropdown-item:hover{background:#f5f5f5}
+.search-wrapper{background:white;border-radius:35px;padding:6px 8px 6px 20px}
+.search-wrapper input{border:none;outline:none;box-shadow:none;font-size:17px}
+.search-wrapper input:focus{box-shadow:none}
+.search-btn{width:44px;height:44px;border-radius:50%;background:#ffe7e7;color:#d71920;border:none;font-size:22px}
+.keyword-list a{color:white;text-decoration:none;margin-right:18px;font-weight:600}
+.keyword-list a:hover{text-decoration:underline}
+.user-info-btn{border:none;background:transparent;color:white;display:inline-flex;align-items:center;gap:10px;padding:0}
+.user-avatar{width:46px;height:46px;border-radius:50%;object-fit:cover;background:white;border:2px solid rgba(255,255,255,.7)}
+.user-text{text-align:left;line-height:1.2;max-width:150px}
+.user-text span{display:block;font-size:13px;color:#ffe6e6}
+.user-text strong{display:block;font-size:15px;color:white;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.user-menu{min-width:300px;border-radius:10px}
+.user-menu-header{display:flex;align-items:center;gap:12px;padding:12px 16px}
+.menu-avatar{width:52px;height:52px;border-radius:50%;object-fit:cover}
+.cart-btn{background:#06101c;color:white;border-radius:30px;padding:13px 22px;font-size:20px;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;white-space:nowrap}
+.cart-btn:hover{color:white;background:#111827}
+.footer{background:#212529;color:white}
+.footer a{color:#ddd;text-decoration:none}
+</style>
+</head>
+
+<body>
+
+<header class="main-header py-3">
+    <div class="container-fluid px-4">
+        <div class="row align-items-center">
+
+            <div class="col-lg-2">
+                <div class="dropdown">
+                    <button class="category-btn"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                        <i class="bi bi-list fs-2 me-2"></i>
+                        Danh mục
+                    </button>
+
+                    <ul class="dropdown-menu show-category shadow border-0 mt-3">
+
+                        <li th:if="${menuCategories == null or menuCategories.isEmpty()}">
+                            <span class="dropdown-item text-muted">
+                                Chưa có danh mục
+                            </span>
+                        </li>
+
+                        <li th:each="c : ${menuCategories}">
+                            <a class="dropdown-item d-flex justify-content-between align-items-center"
+                               th:href="@{/category/{slug}(slug=${c.slug})}">
+                                <span>
+                                    <i class="bi bi-folder me-2"></i>
+                                    <span th:text="${c.name}">Tên danh mục</span>
+                                </span>
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <form th:action="@{/products}" method="get">
+                    <div class="search-wrapper d-flex align-items-center">
+                        <input type="text"
+                               name="keyword"
+                               class="form-control"
+                               placeholder="Nhập tên điện thoại, laptop, phụ kiện... cần tìm">
+
+                        <button class="search-btn" type="submit">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </form>
+
+                
+            </div>
+
+            <div class="col-lg-4 text-end">
+                <div class="dropdown d-inline-block me-3">
+
+                    <button class="user-info-btn"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false">
+
+                        <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                             class="user-avatar"
+                             alt="Avatar">
+
+                        <div class="user-text">
+                            <span>Xin chào,</span>
+                            <strong th:text="${#authentication.name}">
+                                user@gmail.com
+                            </strong>
+                        </div>
+                    </button>
+
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 user-menu">
+
+                        <li class="user-menu-header">
+                            <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                                 class="menu-avatar"
+                                 alt="Avatar">
+
+                            <div>
+                                <strong th:text="${#authentication.name}">
+                                    user@gmail.com
+                                </strong>
+                                <div class="text-muted small">
+                                    Thông tin tài khoản
+                                </div>
+                            </div>
+                        </li>
+
+                        <li><hr class="dropdown-divider"></li>
+
+                        <li>
+                            <a class="dropdown-item py-2"
+                               th:href="@{/account/profile}">
+                                <i class="bi bi-person me-2"></i>
+                                Tài Khoản Của Tôi
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item py-2"
+                               th:href="@{/orders}">
+                                <i class="bi bi-bag me-2"></i>
+                                Đơn Mua
+                            </a>
+                        </li>
+
+                        <th:block sec:authorize="hasAnyRole('ADMIN','STAFF')">
+
+                            <li><hr class="dropdown-divider"></li>
+
+                            <li>
+                                <h6 class="dropdown-header text-danger fw-bold">
+                                    QUẢN TRỊ HỆ THỐNG
+                                </h6>
+                            </li>
+
+								<!-- Chỉ ADMIN -->
+								<li sec:authorize="hasRole('ADMIN')"><a
+									class="dropdown-item py-2" th:href="@{/admin/users}"> <i
+										class="bi bi-people me-2"></i> Quản lý tài khoản
+								</a></li>
+
+								<!-- ADMIN + STAFF -->
+								<li sec:authorize="hasAnyRole('ADMIN','STAFF')"><a
+									class="dropdown-item py-2" th:href="@{/admin/categories}">
+										<i class="bi bi-folder me-2"></i> Quản lý danh mục
+								</a></li>
+
+								<li sec:authorize="hasAnyRole('ADMIN','STAFF')"><a
+									class="dropdown-item py-2" th:href="@{/admin/products}"> <i
+										class="bi bi-box-seam me-2"></i> Quản lý sản phẩm
+								</a></li>
+
+							</th:block>
+
+                        <li><hr class="dropdown-divider"></li>
+
+                        <li>
+                            <a class="dropdown-item text-danger py-2"
+                               th:href="@{/logout}">
+                                <i class="bi bi-box-arrow-right me-2"></i>
+                                Đăng Xuất
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+
+                <a th:href="@{/cart}" class="cart-btn">
+                    <i class="bi bi-cart-fill me-2"></i>
+                    Giỏ hàng
+                </a>
+            </div>
+
+        </div>
+    </div>
+</header>
+
+<main class="container my-4">
+    <div th:insert="${content}"></div>
+</main>
+
+<footer class="footer mt-5 pt-5 pb-4">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-lg-4">
+                <h5>CNTTShop</h5>
+                <p>Hệ thống bán laptop, PC gaming, linh kiện máy tính chính hãng.</p>
+            </div>
+
+            <div class="col-lg-4">
+                <h5>Hỗ trợ khách hàng</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#">Chính sách bảo hành</a></li>
+                    <li><a href="#">Hướng dẫn mua hàng</a></li>
+                    <li><a href="#">Liên hệ</a></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-4">
+                <h5>Kết nối</h5>
+                <div class="fs-4">
+                    <i class="bi bi-facebook me-2"></i>
+                    <i class="bi bi-youtube me-2"></i>
+                    <i class="bi bi-tiktok me-2"></i>
+                </div>
+            </div>
+
+        </div>
+
+        <hr>
+
+        <div class="text-center">
+            © 2026 CNTTShop - All rights reserved
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
